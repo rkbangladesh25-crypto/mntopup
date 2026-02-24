@@ -714,28 +714,13 @@ renderNav();
       });
   }
 </script>
-  <script type="module">
+<script type="module">
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const auth = getAuth();
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    const loginBtn = document.querySelector("button");
-    if(loginBtn){
-      loginBtn.style.display = "none";
-    }
-  }
-});
-</script>
-  <script type="module">
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const auth = getAuth();
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // উপরের Login লেখাটা খুঁজে লুকাবে
     const allLinks = document.querySelectorAll("a, button, div");
 
     allLinks.forEach(el => {
@@ -744,7 +729,6 @@ onAuthStateChanged(auth, (user) => {
       }
     });
 
-    // Email দেখাবে
     const emailBox = document.createElement("span");
     emailBox.innerText = user.email;
     emailBox.style.marginLeft = "10px";
@@ -753,6 +737,7 @@ onAuthStateChanged(auth, (user) => {
     document.body.prepend(emailBox);
   }
 });
+  
 </script>
 </body>
 </html>

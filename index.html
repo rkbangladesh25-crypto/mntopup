@@ -714,5 +714,19 @@ renderNav();
       });
   }
 </script>
+  <script type="module">
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const auth = getAuth();
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const loginBtn = document.querySelector("button");
+    if(loginBtn){
+      loginBtn.style.display = "none";
+    }
+  }
+});
+</script>
 </body>
 </html>

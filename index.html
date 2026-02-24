@@ -728,5 +728,31 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 </script>
+  <script type="module">
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const auth = getAuth();
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // উপরের Login লেখাটা খুঁজে লুকাবে
+    const allLinks = document.querySelectorAll("a, button, div");
+
+    allLinks.forEach(el => {
+      if (el.innerText.trim() === "Login") {
+        el.style.display = "none";
+      }
+    });
+
+    // Email দেখাবে
+    const emailBox = document.createElement("span");
+    emailBox.innerText = user.email;
+    emailBox.style.marginLeft = "10px";
+    emailBox.style.color = "white";
+
+    document.body.prepend(emailBox);
+  }
+});
+</script>
 </body>
 </html>

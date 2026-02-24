@@ -508,12 +508,7 @@ function doRegister(){
   users[email]={name,email,pass,wallet:0,createdAt:new Date().toLocaleString('bn-BD')};
   saveUsers(users);setCurrentUser(email);closeOverlay('loginOverlay');renderNav();showToast('🎉 Account তৈরি হয়েছে!');
 }
-function googleLogin(){
-  const email='user@gmail.com',name='Google User';
-  const users=getUsers();
-  if(!users[email])users[email]={name,email,pass:'google',wallet:0,createdAt:new Date().toLocaleString('bn-BD'),googleAuth:true};
-  saveUsers(users);setCurrentUser(email);closeOverlay('loginOverlay');renderNav();showToast('✅ Google দিয়ে Login হয়েছে!');
-}
+
 
 /* ── WALLET ── */
 function openWallet(){const user=getCurrentUser();if(!user){openLogin();return;}renderWallet();openOverlay('walletOverlay');}
@@ -686,6 +681,38 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
 /* ── INIT ── */
 applySettings();
 renderNav();
+</script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup } 
+    from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD3YXwRbNqppOmhHXNrPmSXqcVlJZRtt2o",
+    authDomain: "mntopup.firebaseapp.com",
+    projectId: "mntopup",
+    storageBucket: "mntopup.firebasestorage.app",
+    messagingSenderId: "717615421196",
+    appId: "1:717615421196:web:3e0604e60fb1d148775b29",
+    measurementId: "G-P6RHSHX43H"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  window.googleLogin = function(){
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        alert("✅ Welcome " + user.displayName);
+      })
+      .catch((error) => {
+        alert("❌ Login Failed: " + error.message);
+      });
+  }
 </script>
 </body>
 </html>

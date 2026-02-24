@@ -714,10 +714,22 @@ renderNav();
       });
   }
 </script>
-<script type="module">
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const auth = getAuth();
+const firebaseConfig = {
+  apiKey: "AIzaSyD3YXwRbNqppOmhHXNrPmSXqcVlJZRtt2o",
+  authDomain: "mntopup.firebaseapp.com",
+  projectId: "mntopup",
+  storageBucket: "mntopup.firebasestorage.app",
+  messagingSenderId: "717615421196",
+  appId: "1:717615421196:web:3e0604e60fb1d148775b29",
+  measurementId: "G-P6RHSHX43H"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -737,7 +749,6 @@ onAuthStateChanged(auth, (user) => {
     document.body.prepend(emailBox);
   }
 });
-  
 </script>
 </body>
 </html>

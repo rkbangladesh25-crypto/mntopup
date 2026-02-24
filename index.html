@@ -750,5 +750,89 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 </script>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, 
+         GoogleAuthProvider, 
+         signInWithPopup, 
+         createUserWithEmailAndPassword, 
+         signInWithEmailAndPassword,
+         onAuthStateChanged,
+         signOut } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+/* 🔥 তোমার Firebase config */
+const firebaseConfig = {
+  apiKey: "AIzaSyD3YXwRbNqppOmhHXNrPmSXqcVlJZRtt2o",
+  authDomain: "mntopup.firebaseapp.com",
+  projectId: "mntopup",
+  storageBucket: "mntopup.appspot.com",
+  messagingSenderId: "717615421196",
+  appId: "1:717615421196:web:3e0604e60fb1d148775b29"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+/* 🔥 GOOGLE LOGIN */
+window.googleLogin = function() {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      alert("✅ Welcome " + result.user.email);
+    })
+    .catch((error) => {
+      alert("❌ " + error.message);
+    });
+};
+
+/* 🔥 EMAIL REGISTER */
+window.doRegister = function() {
+  const email = document.getElementById("rEmail").value;
+  const pass = document.getElementById("rPass").value;
+
+  createUserWithEmailAndPassword(auth, email, pass)
+    .then(() => {
+      alert("🎉 Registration Successful");
+    })
+    .catch((error) => {
+      alert("❌ " + error.message);
+    });
+};
+
+/* 🔥 EMAIL LOGIN */
+window.doLogin = function() {
+  const email = document.getElementById("lEmail").value;
+  const pass = document.getElementById("lPass").value;
+
+  signInWithEmailAndPassword(auth, email, pass)
+    .then(() => {
+      alert("✅ Login Successful");
+    })
+    .catch((error) => {
+      alert("❌ " + error.message);
+    });
+};
+
+/* 🔥 LOGIN STATE CHECK */
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const loginBtn = document.getElementById("loginBtn");
+    if (loginBtn) loginBtn.style.display = "none";
+
+    const userBox = document.getElementById("userInfo");
+    if (userBox) userBox.innerText = user.email;
+  }
+});
+
+/* 🔥 LOGOUT */
+window.logoutUser = function() {
+  signOut(auth).then(() => {
+    alert("Logged Out");
+    location.reload();
+  });
+};
+
+</script>
 </body>
 </html>

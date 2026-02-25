@@ -240,7 +240,11 @@ footer{background:var(--dark);color:#fff;padding:36px 5% 24px}
     </a>
     <div class="nav-right">
       <div class="live-chip">LIVE</div>
-      <div id="navAuthArea"></div>
+     <button id="loginBtn" onclick="googleLogin()" style="margin-left:10px;">
+  Login
+</button>
+
+<span id="userInfo" style="margin-left:10px; font-weight:600;"></span>
     </div>
   </div>
 </nav>
@@ -470,46 +474,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('.av-wrapper'))closeD
 function openOverlay(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
 function closeOverlay(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
 function overlayClose(e,id){if(e.target===document.getElementById(id))closeOverlay(id);}
-
-/* ── LOGIN ── */
-function openLogin(){renderLoginForm();openOverlay('loginOverlay');}
-function renderLoginForm(){
-  document.getElementById('loginBody').innerHTML=`
-    <button class="google-btn" onclick="googleLogin()"><div class="g-ico">G</div>Login with Google</button>
-    <div class="divider">Or sign in with credentials</div>
-    <div class="step-blk"><label class="step-lbl">Email</label><input class="field" id="lEmail" type="email" placeholder="Email"></div>
-    <div class="step-blk"><label class="step-lbl">Password</label><input class="field" id="lPass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="main-btn" onclick="doLogin()">🔑 Login</button>
-    <div class="reg-link">নতুন user? <a onclick="renderRegForm()">Register Now</a></div>`;
-}
-function renderRegForm(){
-  document.getElementById('loginBody').innerHTML=`
-    <button class="google-btn" onclick="googleLogin()"><div class="g-ico">G</div>Continue with Google</button>
-    <div class="divider">Or register with email</div>
-    <div class="step-blk"><label class="step-lbl">নাম</label><input class="field" id="rName" placeholder="আপনার নাম"></div>
-    <div class="step-blk"><label class="step-lbl">Email</label><input class="field" id="rEmail" type="email" placeholder="Email"></div>
-    <div class="step-blk"><label class="step-lbl">Password</label><input class="field" id="rPass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doRegister()"></div>
-    <button class="main-btn" onclick="doRegister()">✅ Register</button>
-    <div class="reg-link">Account আছে? <a onclick="renderLoginForm()">Login</a></div>`;
-}
-function doLogin(){
-  const email=document.getElementById('lEmail').value.trim(),pass=document.getElementById('lPass').value;
-  if(!email||!pass){showToast('⚠️ Email ও Password দিন');return;}
-  const users=getUsers();
-  if(!users[email]){showToast('❌ Account নেই!');return;}
-  if(users[email].pass!==pass){showToast('❌ Password ভুল!');return;}
-  setCurrentUser(email);closeOverlay('loginOverlay');renderNav();showToast('✅ স্বাগতম '+users[email].name+'!');
-}
-function doRegister(){
-  const name=document.getElementById('rName').value.trim(),email=document.getElementById('rEmail').value.trim(),pass=document.getElementById('rPass').value;
-  if(!name||!email||!pass){showToast('⚠️ সব তথ্য দিন');return;}
-  const users=getUsers();
-  if(users[email]){showToast('❌ Email টি আগেই registered!');return;}
-  users[email]={name,email,pass,wallet:0,createdAt:new Date().toLocaleString('bn-BD')};
-  saveUsers(users);setCurrentUser(email);closeOverlay('loginOverlay');renderNav();showToast('🎉 Account তৈরি হয়েছে!');
-}
-
-
+  
 /* ── WALLET ── */
 function openWallet(){const user=getCurrentUser();if(!user){openLogin();return;}renderWallet();openOverlay('walletOverlay');}
 let selWPay=null;
@@ -677,91 +642,20 @@ setInterval(()=>{const d=document.createElement('div');d.innerHTML=genRow();ol.i
 
 function copyTxt(t){navigator.clipboard?.writeText(t).then(()=>showToast('✅ কপি হয়েছে!'));}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
-
-/* ── INIT ── */
-applySettings();
-renderNav();
+  
 </script>
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup } 
-    from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut 
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyD3YXwRbNqppOmhHXNrPmSXqcVlJZRtt2o",
-    authDomain: "mntopup.firebaseapp.com",
-    projectId: "mntopup",
-    storageBucket: "mntopup.firebasestorage.app",
-    messagingSenderId: "717615421196",
-    appId: "1:717615421196:web:3e0604e60fb1d148775b29",
-    measurementId: "G-P6RHSHX43H"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
-
-  window.googleLogin = function(){
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        alert("✅ Welcome " + user.displayName);
-      })
-      .catch((error) => {
-        alert("❌ Login Failed: " + error.message);
-      });
-  }
-</script>
-  <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyD3YXwRbNqppOmhHXNrPmSXqcVlJZRtt2o",
-  authDomain: "mntopup.firebaseapp.com",
-  projectId: "mntopup",
-  storageBucket: "mntopup.firebasestorage.app",
-  messagingSenderId: "717615421196",
-  appId: "1:717615421196:web:3e0604e60fb1d148775b29",
-  measurementId: "G-P6RHSHX43H"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    const allLinks = document.querySelectorAll("a, button, div");
-
-    allLinks.forEach(el => {
-      if (el.innerText.trim() === "Login") {
-        el.style.display = "none";
-      }
-    });
-
-    const emailBox = document.createElement("span");
-    emailBox.innerText = user.email;
-    emailBox.style.marginLeft = "10px";
-    emailBox.style.color = "white";
-
-    document.body.prepend(emailBox);
-  }
-});
-</script>
-  <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, 
-         GoogleAuthProvider, 
-         signInWithPopup, 
-         createUserWithEmailAndPassword, 
-         signInWithEmailAndPassword,
-         onAuthStateChanged,
-         signOut } 
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-/* 🔥 তোমার Firebase config */
 const firebaseConfig = {
   apiKey: "AIzaSyD3YXwRbNqppOmhHXNrPmSXqcVlJZRtt2o",
   authDomain: "mntopup.firebaseapp.com",
@@ -775,60 +669,62 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-/* 🔥 GOOGLE LOGIN */
-window.googleLogin = function() {
+/* Google Login */
+window.googleLogin = function(){
   signInWithPopup(auth, provider)
-    .then((result) => {
+    .then((result)=>{
       alert("✅ Welcome " + result.user.email);
     })
-    .catch((error) => {
+    .catch((error)=>{
       alert("❌ " + error.message);
     });
 };
 
-/* 🔥 EMAIL REGISTER */
-window.doRegister = function() {
-  const email = document.getElementById("rEmail").value;
-  const pass = document.getElementById("rPass").value;
+/* Email Register */
+window.doRegister = function(){
+  const email = document.getElementById("rEmail")?.value;
+  const pass = document.getElementById("rPass")?.value;
 
   createUserWithEmailAndPassword(auth, email, pass)
-    .then(() => {
+    .then(()=>{
       alert("🎉 Registration Successful");
     })
-    .catch((error) => {
+    .catch((error)=>{
       alert("❌ " + error.message);
     });
 };
 
-/* 🔥 EMAIL LOGIN */
-window.doLogin = function() {
-  const email = document.getElementById("lEmail").value;
-  const pass = document.getElementById("lPass").value;
+/* Email Login */
+window.doLogin = function(){
+  const email = document.getElementById("lEmail")?.value;
+  const pass = document.getElementById("lPass")?.value;
 
   signInWithEmailAndPassword(auth, email, pass)
-    .then(() => {
+    .then(()=>{
       alert("✅ Login Successful");
     })
-    .catch((error) => {
+    .catch((error)=>{
       alert("❌ " + error.message);
     });
 };
 
-/* 🔥 LOGIN STATE CHECK */
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    const loginBtn = document.getElementById("loginBtn");
-    if (loginBtn) loginBtn.style.display = "none";
+/* Auth State */
+onAuthStateChanged(auth, (user)=>{
+  const loginBtn = document.getElementById("loginBtn");
+  const userBox = document.getElementById("userInfo");
 
-    const userBox = document.getElementById("userInfo");
-    if (userBox) userBox.innerText = user.email;
+  if(user){
+    if(loginBtn) loginBtn.style.display = "none";
+    if(userBox) userBox.innerText = user.email;
+  } else {
+    if(loginBtn) loginBtn.style.display = "block";
+    if(userBox) userBox.innerText = "";
   }
 });
 
-/* 🔥 LOGOUT */
-window.logoutUser = function() {
-  signOut(auth).then(() => {
-    alert("Logged Out");
+/* Logout */
+window.logoutUser = function(){
+  signOut(auth).then(()=>{
     location.reload();
   });
 };
